@@ -1,0 +1,9 @@
+This folder is where all third party code should go.
+
+Each third party library should be in a separate folder and 
+it should contain a license file for said library.
+
+Licenses of any third party code should be MIT, BSD or Apache.
+
+Third party licenses must be compatible with the Apache 2.0 license
+If you have questions about this talk to your manager.
