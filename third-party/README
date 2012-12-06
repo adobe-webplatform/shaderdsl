@@ -3,7 +3,25 @@ This folder is where all third party code should go.
 Each third party library should be in a separate folder and 
 it should contain a license file for said library.
 
-Licenses of any third party code should be MIT, BSD or Apache.
+1. Compare all third-party licenses against the licenses on
+   https://zerowing.corp.adobe.com/display/legalwiki/Open+Source+License+Guidelines+for+Technology+Development:
+2. Always talk to your manager about the planned usage of third-party
+   code before using it.
+3. Avoid any licenses that aren’t green – this will make things go
+   faster, and reduce risk. Third party licenses must be compatible
+   with the Apache 2.0 license.
+4. Make sure you and your manager read and understand all the
+   requirements for any licenses, and make sure you comply with it
+   including attributions.
+5. For any licenses that are green and you understand the license
+   requirements and have complied with them, you can check in the code
+   (make sure to keep the license file and add the third-party info to
+   the NOTICE file).
+6. For any licenses that are yellow, red, not listed, or you can’t
+   meet or understand the license/guidelines, work with your PGM and
+   Legal team.
+7. For any licenses that are not listed or red, work with your PGM and
+   Legal team.
+8. When in doubt, work with your PGM and Legal team.  It’s your
+   responsibility to try and prevent unneeded risk for Adobe.
 
-Third party licenses must be compatible with the Apache 2.0 license
-If you have questions about this talk to your manager.
