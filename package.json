@@ -1,0 +1,16 @@
+{
+  "name": "ShaderDSL.js",
+  "version": "0.0.1",
+  "description": "A Domain Specific Language for GPU shaders based on Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.corp.adobe.com:kpalacz/shaderdsl.git"
+  },
+  "author": "Krzysztof Palacz",
+  "license": "Apache 2.0",
+  "gitHead": "241a2ea3cdfa3980e45ebb1d9fa385aed6e5cb5f"
+}

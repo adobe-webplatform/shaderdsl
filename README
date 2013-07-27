@@ -1,6 +1,0 @@
-This is a template repository to start an open source
-project at Adobe.
-
-git clone git://adobe/opens-source-template
-git checkout-index -f -a --prefix=/path/to/folder/
-rm /path/to/folder/README

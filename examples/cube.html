@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Gladder : Cube example</title>
+    <script src="../third-party/gladder/src/gl-matrix.js"></script>
+    <script src="../third-party/gladder/src/webgl-debug.js"></script>
+    <script src="../third-party/gladder/src/gladder.js"></script>
+  </head>
+  <body>
+    <h1>Gladder : Cube example</h1>
+    <p>Because every OpenGL demo needs a spinning cube, right?</p>
+
+    <canvas id="canvas" width="640" height="640"></canvas>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+      uniform mat4 transform;
+      attribute vec3 position;
+      void main() {
+        vec3 p = position;
+        if (p.x > 10.0) p.y = p.y + 10.0;
+        float array[3];
+     
+        //array = float[3](0., 0., 0.);// (pos.x, pos.y, pos.z);
+
+        gl_Position = transform * vec4(position, 1.0);
+      }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+      precision mediump float;
+      void main() {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+      }
+    </script>
+
+    <script>
+      var gla = new Gladder({
+        canvas: "canvas",
+        debug: true,
+        errorCallback: function(err) { console.error(err); },
+        // callCallback: function(msg) { console.info(msg); },
+      });
+
+      var program = new gla.Program({
+        vertexShader: "vertex-shader",
+        fragmentShader: "fragment-shader",
+        uniforms: { transform: "mat4" },
+        attributes: { position: "vec3" },
+      });
+
+      var cubeData = [
+        -1,-1,-1, -1,-1,+1, -1,+1,-1, -1,+1,+1, +1,-1,-1, +1,-1,+1, +1,+1,-1, +1,+1,+1, // x direction
+        -1,-1,-1, -1,+1,-1, -1,-1,+1, -1,+1,+1, +1,-1,-1, +1,+1,-1, +1,-1,+1, +1,+1,+1, // y direction
+        -1,-1,-1, +1,-1,-1, -1,-1,+1, +1,-1,+1, -1,+1,-1, +1,+1,-1, -1,+1,+1, +1,+1,+1, // z direction
+      ];
+
+      var buffer = new gla.Buffer({
+        data: cubeData,
+        views: { position: { size: 3 } },
+      });
+
+      var modelMatrix = mat4.create();
+      mat4.identity(modelMatrix);
+
+      var viewMatrix = mat4.create();
+      mat4.identity(viewMatrix);
+      mat4.translate(viewMatrix, [0, 0, -5]);
+
+      var projectionMatrix = mat4.create();
+      mat4.perspective(45, gla.canvas.width / gla.canvas.height, 1.0, 10.0, projectionMatrix);
+
+      var transform = mat4.create();
+
+      gla.mainLoop(function(delta) {
+        gla.clear({ color: [1, 1, 1] });
+
+        mat4.rotate(modelMatrix, 0.0008 * delta, [1, 0, 0]);
+        mat4.rotate(modelMatrix, 0.0005 * delta, [0, 1, 0]);
+        mat4.rotate(modelMatrix, 0.0003 * delta, [0, 0, 1]);
+
+        mat4.identity(transform);
+        mat4.multiply(transform, projectionMatrix);
+        mat4.multiply(transform, viewMatrix);
+        mat4.multiply(transform, modelMatrix);
+
+        gla.draw({
+          program: program,
+          uniforms: { transform: transform },
+          attributes: { position: buffer.views.position },
+          mode: gla.DrawMode.LINES,
+          count: buffer.views.position.numItems(),
+        });
+      });
+    </script>
+  </body>
+</html>

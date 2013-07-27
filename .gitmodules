@@ -1,0 +1,6 @@
+[submodule "third-party/rivertrail"]
+	path = third-party/rivertrail
+	url = https://github.com/RiverTrail/RiverTrail.git
+[submodule "third-party/gladder"]
+	path = third-party/gladder
+	url = https://github.com/ttencate/gladder.git
