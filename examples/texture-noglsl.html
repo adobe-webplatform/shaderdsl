@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Gladder : Texture example</title>
+
+    <script src="../third-party/gladder/src/gl-matrix.js"></script>
+    <script src="../third-party/gladder/src/webgl-debug.js"></script>
+    <script src="../third-party/gladder/src/gladder.js"></script>
+    <script src="../ShaderDSL.js"></script>
+
+  </head>
+  <body>
+    <h1>Gladder : Texture example</h1>
+    <p>This shows how to load textures and map them to objects.</p>
+    <p><em>Note: due to browser security constraints, this might not work if you view it from a <code>file://</code> URL.</em></p>
+
+    <canvas id="canvas" width="640" height="640"></canvas>
+
+
+    <script>
+      var gla = new Gladder({
+        canvas: "canvas",
+        debug: true,
+        errorCallback: function(err) { console.error(err); },
+        // callCallback: function(msg) { console.info(msg); },
+      });
+
+      var program = new gla.Program(ShaderDSL.compileGladderProgram({
+        vertexShader: function(attributes, uniforms) {
+          var z = 0.1 * Math.sin(5.0 * attributes.position[0] - 5.0 * attributes.position[1] - 0.005 * uniforms.time);
+          mat4.multiply(uniforms.transform, vec4.createFrom(attributes.position[0], attributes.position[1], z, 1.0), gl_Position);
+          return {
+            tc: attributes.texCoord
+          };
+        },
+          fragmentShader: function(uniforms, varyings) {
+             gl_FragColor = texture2D.create(uniforms.sampler, varyings.tc);
+          },
+        uniforms: { transform: "mat4", time: "float", sampler: "sampler2D" },
+        attributes: { position: "vec2", texCoord: "vec2" },
+      }));
+
+      var n = 12;
+      var data = new Float32Array((n+2) * (n-1) * 2 * 4);
+      var i = 0;
+      function addPoint(x, y, s, t) {
+        data[i++] = x * 2;
+        data[i++] = y * 4/3;
+        data[i++] = s * 1;
+        data[i++] = t * 2/3;
+      }
+      for (var y = 0; y < n; ++y) {
+        for (var x = 0; x <= n; ++x) {
+          addPoint(x / n - 0.5, y / n - 0.5, x / n, y / n);
+          addPoint(x / n - 0.5, (y + 1) / n - 0.5, x / n, (y + 1) / n);
+        }
+        addPoint(0.5, (y + 1) / n - 0.5, 1.0, (y + 1) / n);
+        addPoint(-0.5, (y + 1) / n - 0.5, 0.0, (y + 1) / n);
+      }
+
+      var buffer = new gla.Buffer({
+        data: data,
+        views: {
+          position: { size: 2, stride: 2 * 2 * 4 },
+          texCoord: { size: 2, stride: 2 * 2 * 4, offset: 2 * 4 },
+        }
+      });
+
+      var texture = new gla.Texture({
+        image: "orion-nebula.jpg",
+        format: gla.Texture.Format.RGB,
+      });
+
+      var modelMatrix = mat4.create();
+
+      var viewMatrix = mat4.create();
+      mat4.identity(viewMatrix);
+      mat4.translate(viewMatrix, [0, 0, -3]);
+
+      var projectionMatrix = mat4.create();
+      mat4.perspective(45, gla.canvas.width / gla.canvas.height, 1.0, 10.0, projectionMatrix);
+
+      var transform = mat4.create();
+
+      var time = 0;
+      gla.mainLoop(function(delta) {
+        gla.clear({ color: [1, 1, 1] });
+
+        time += delta;
+        angle = 0.002 * time;
+        mat4.identity(modelMatrix);
+        mat4.rotate(modelMatrix, 0.3, [Math.cos(angle), Math.sin(angle), 0.0]);
+
+        mat4.identity(transform);
+        mat4.multiply(transform, projectionMatrix);
+        mat4.multiply(transform, viewMatrix);
+        mat4.multiply(transform, modelMatrix);
+
+        gla.draw({
+          program: program,
+          uniforms: { transform: transform, time: time, sampler: texture },
+          attributes: { position: buffer.views.position, texCoord: buffer.views.texCoord },
+          mode: gla.DrawMode.TRIANGLE_STRIP,
+          count: buffer.views.position.numItems(),
+        });
+      });
+    </script>
+  </body>
+</html>
+
